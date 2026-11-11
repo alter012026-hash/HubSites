@@ -68,7 +68,7 @@ function tpop_pauta_box( $post ) {
 			<p class="description">Uma por linha. Estes links serão copiados para o rascunho e aparecerão como “Fontes consultadas”.</p></td></tr>
 		<tr><th><label for="tpop_fatos_redacao">Fatos confirmados pela redação</label></th>
 			<td><textarea id="tpop_fatos_redacao" name="tpop_fatos_redacao" rows="5" class="large-text" maxlength="5000" placeholder="Registre fatos verificados, com a fonte ou link ao lado de cada um."><?php echo esc_textarea( $fatos ); ?></textarea>
-			<p class="description">Opcional. Será incluído no dossiê da IA como anotação editorial. Registre somente fatos verificados e mantenha a referência no campo de links.</p></td></tr>
+			<p class="description">Será incluído no dossiê da IA como anotação editorial. Registre somente fatos verificados e mantenha a referência no campo de links. Para evitar que a IA preencha lacunas, a geração exige pelo menos 700 caracteres de evidências; se o RSS for curto, consulte a fonte e acrescente fatos confirmados. O texto gerado deve ser original, não uma cópia da matéria consultada.</p></td></tr>
 		<tr><th>Fonte confiável</th>
 			<td><label><input type="checkbox" name="tpop_fonte_confirmada" value="1" <?php checked( tpop_pauta_meta( $id, '_tpop_fonte_confirmada', '0' ), '1' ); ?>> Confirmei manualmente que há fonte confiável para esta pauta</label></td></tr>
 		<tr><th><label for="tpop_verificado_em">Última verificação</label></th>

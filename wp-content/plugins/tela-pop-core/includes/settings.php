@@ -76,7 +76,7 @@ function tpop_settings_schema() {
 				array(
 					'title'  => 'Dados que alimentam o texto',
 					'fields' => array(
-						'read_article'      => array( 'type' => 'toggle', 'label' => 'Ler a matéria completa', 'default' => '1', 'text' => 'Extrair texto integral somente de fontes com autorização escrita (Licenciada)', 'help' => 'Fontes oficiais sem autorização de reprodução e fontes “somente descoberta” contribuem apenas com título, resumo e link do RSS. Para usar texto integral, confirme autorização por escrito e marque a fonte como Licenciada.' ),
+						'read_article'      => array( 'type' => 'toggle', 'label' => 'Consultar matéria da fonte', 'default' => '1', 'text' => 'Extrair trecho somente de fontes com autorização escrita (Licenciada)', 'help' => 'Fontes “somente descoberta” contribuem apenas com título, resumo e link do RSS. Para consultar texto de uma matéria, confirme autorização por escrito e marque a fonte como Licenciada. A IA deve produzir texto original e não reproduzir a matéria consultada.' ),
 						'article_max_chars' => array( 'type' => 'number', 'label' => 'Trecho máximo da matéria', 'default' => 6000, 'min' => 1000, 'max' => 15000, 'unit' => 'caracteres' ),
 						'ai_article_depth'  => array( 'type' => 'select', 'label' => 'Profundidade do rascunho', 'default' => 'detailed', 'options' => array( 'standard' => 'Padrão (300–500 palavras quando houver fatos)', 'detailed' => 'Detalhado (500–800 palavras quando houver fatos)' ), 'help' => 'A extensão depende do material apurado. A IA não deve preencher o texto com contexto sem fonte.' ),
 					),

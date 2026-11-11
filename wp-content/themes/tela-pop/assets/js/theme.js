@@ -33,6 +33,35 @@
 		updateHeader();
 	}
 
+	/* Navegação móvel: abre como painel, fecha após a escolha e devolve foco no Escape. */
+	var menuToggle = document.querySelector('.menu-toggle');
+	var mainNav = document.getElementById('main-nav');
+	if (menuToggle && mainNav) {
+		var closeMenu = function (restoreFocus) {
+			mainNav.classList.remove('is-open');
+			menuToggle.setAttribute('aria-expanded', 'false');
+			menuToggle.setAttribute('aria-label', 'Abrir menu');
+			if (restoreFocus) { menuToggle.focus(); }
+		};
+		menuToggle.addEventListener('click', function () {
+			var open = !mainNav.classList.contains('is-open');
+			mainNav.classList.toggle('is-open', open);
+			menuToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+			menuToggle.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+		});
+		mainNav.addEventListener('click', function (event) {
+			if (event.target.closest('a')) { closeMenu(false); }
+		});
+		document.addEventListener('keydown', function (event) {
+			if (event.key === 'Escape' && mainNav.classList.contains('is-open')) {
+				closeMenu(true);
+			}
+		});
+		window.addEventListener('resize', function () {
+			if (window.innerWidth > 679) { closeMenu(false); }
+		});
+	}
+
 	/* Busca: abre/fecha o painel */
 	/* Tema claro/escuro: prefere a configuração do aparelho até a pessoa escolher um modo. */
 	var themeToggle = document.querySelector('[data-theme-toggle]');

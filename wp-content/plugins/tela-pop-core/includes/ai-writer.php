@@ -40,6 +40,60 @@ function tpop_ai_endpoint() {
 		: 'https://api.openai.com/v1/chat/completions';
 }
 
+/** Faz uma chamada ao provedor e devolve o JSON editorial validado. */
+function tpop_ai_request_json( $system, $prompt, $max_tokens ) {
+	$api_key = tpop_ai_key();
+	$provider = tpop_ai_provider_label();
+	$body = wp_json_encode(
+		array(
+			'model'                 => tpop_ai_model(),
+			'temperature'           => 0.3,
+			'max_completion_tokens' => $max_tokens,
+			'response_format'       => array( 'type' => 'json_object' ),
+			'messages'              => array(
+				array( 'role' => 'system', 'content' => $system ),
+				array( 'role' => 'user', 'content' => $prompt ),
+			),
+		)
+	);
+	$args = array(
+		'timeout' => 90,
+		'headers' => array( 'Authorization' => 'Bearer ' . $api_key, 'Content-Type' => 'application/json' ),
+		'body'    => $body,
+	);
+	$response = wp_remote_post( tpop_ai_endpoint(), $args );
+	$http     = is_wp_error( $response ) ? 0 : (int) wp_remote_retrieve_response_code( $response );
+	if ( is_wp_error( $response ) || 429 === $http || $http >= 500 ) {
+		sleep( 3 );
+		$response = wp_remote_post( tpop_ai_endpoint(), $args );
+		$http     = is_wp_error( $response ) ? 0 : (int) wp_remote_retrieve_response_code( $response );
+	}
+	if ( is_wp_error( $response ) ) {
+		return new WP_Error( 'tpop_api_request', 'Falha de conexão com ' . $provider . ': ' . $response->get_error_message() );
+	}
+	$resp = json_decode( wp_remote_retrieve_body( $response ), true );
+	if ( $http < 200 || $http >= 300 ) {
+		$message = isset( $resp['error']['message'] ) ? $resp['error']['message'] : 'A API retornou HTTP ' . $http;
+		return new WP_Error( 'tpop_api_error', 'Erro na API ' . $provider . ': ' . sanitize_text_field( $message ) );
+	}
+	$raw  = isset( $resp['choices'][0]['message']['content'] ) ? (string) $resp['choices'][0]['message']['content'] : '';
+	$raw  = trim( preg_replace( '/^```(?:json)?|```$/m', '', $raw ) );
+	$json = json_decode( $raw, true );
+	if ( ! is_array( $json ) || empty( $json['content'] ) || empty( $json['title'] ) ) {
+		return new WP_Error( 'tpop_bad_response', 'A IA retornou um conteúdo incompleto. Tente novamente.' );
+	}
+	return $json;
+}
+
+/** Conta palavras em texto HTML sem depender da configuração regional do servidor. */
+function tpop_ai_word_count( $content ) {
+	$plain = wp_strip_all_tags( (string) $content );
+	if ( ! preg_match_all( '/[\p{L}\p{N}]+(?:[\'’.-][\p{L}\p{N}]+)*/u', $plain, $matches ) ) {
+		return 0;
+	}
+	return count( $matches[0] );
+}
+
 /* ------------------------------------------------------------------
  * Conferência automática do texto contra o dossiê
  * Não bloqueia: aponta para a pessoa onde olhar primeiro.
@@ -151,6 +205,12 @@ function tpop_generate_ai_article( $pauta_id ) {
 	}
 	// 1) Dossiê com dados reais.
 	$dossier = tpop_build_dossier( $pauta_id );
+	if ( (int) $dossier['chars'] < 700 ) {
+		return new WP_Error(
+			'tpop_insufficient_evidence',
+			'O material importado ainda é curto para escrever uma notícia completa sem inventar detalhes. Confira a fonte original e acrescente fatos confirmados no campo “Fatos confirmados pela redação” antes de gerar o rascunho.'
+		);
+	}
 	$source_warning = tpop_pauta_source_warning( $pauta_id );
 
 	$modelo   = get_post_meta( $pauta_id, '_tpop_modelo', true );
@@ -169,14 +229,15 @@ function tpop_generate_ai_article( $pauta_id ) {
 	$prompt .= "4. Rumor é rumor: deixe claro quando uma notícia não foi confirmada. Disponibilidade em streaming deve ser atribuída e tratada como sujeita a mudança.\n";
 	$prompt .= "5. Não copie frases do dossiê; reescreva com suas palavras.\n";
 	$prompt .= "6. Em críticas, separe opinião editorial de fatos verificáveis e não invente detalhes da obra. Evite spoilers importantes sem aviso claro.\n";
-	$prompt .= "7. Se o dossiê for curto ou tiver apenas título e link, produza um rascunho proporcionalmente curto, atribua a informação ao feed e não acrescente contexto de memória. Indique em unverified que faltam detalhes para confirmação.\n";
+	$prompt .= "7. Escreva uma matéria original e completa, com abertura que apresente a novidade, desenvolvimento organizado por subtítulos e um fechamento útil. Não transforme o mesmo fato em parágrafos repetidos nem acrescente contexto que não conste no dossiê.\n";
 	$prompt .= "8. Liste em \"unverified\" tudo que você incluiu e que a pessoa revisora deve conferir, e o que faltou saber.\n";
 	$depth = 'standard' === tpop_setting( 'ai_article_depth' ) ? 'standard' : 'detailed';
+	$minimum_words = (int) $dossier['chars'] >= 1500 ? ( 'detailed' === $depth ? 300 : 250 ) : 180;
 	if ( 'detailed' === $depth ) {
-		$prompt .= "9. Quando o dossiê trouxer fatos suficientes, escreva aproximadamente 500–800 palavras: explique a novidade ou a obra, organize detalhes confirmados, contexto presente no dossiê e o que acontece a seguir. Em críticas, desenvolva a avaliação sem revelar grandes spoilers. Não repita ideias para atingir a extensão. Se faltarem fatos, encurte e sinalize a lacuna.\n";
+		$prompt .= "9. Com pelo menos 1.500 caracteres de evidências, escreva aproximadamente 500–800 palavras; com menos evidências, seja proporcional, com pelo menos " . $minimum_words . " palavras, sem repetir informações. Em críticas, desenvolva a avaliação sem revelar grandes spoilers.\n";
 		$max_tokens = 4200;
 	} else {
-		$prompt .= "9. Quando o dossiê trouxer fatos suficientes, escreva aproximadamente 300–500 palavras, com contexto apenas quando estiver documentado. Em críticas, desenvolva uma avaliação original sem inventar detalhes e sem revelar grandes spoilers. Não repita ideias para atingir a extensão. Se faltarem fatos, encurte e sinalize a lacuna.\n";
+		$prompt .= "9. Com pelo menos 1.500 caracteres de evidências, escreva aproximadamente 300–500 palavras; com menos evidências, seja proporcional, com pelo menos " . $minimum_words . " palavras, sem repetir informações. Em críticas, desenvolva uma avaliação original sem inventar detalhes e sem revelar grandes spoilers.\n";
 		$max_tokens = 2800;
 	}
 	if ( '' !== $style ) {
@@ -190,45 +251,23 @@ function tpop_generate_ai_article( $pauta_id ) {
 		. 'claims (lista de {"afirmacao": "...", "fonte": número da fonte no dossiê, ex. 1}), '
 		. 'unverified (lista de textos curtos para a pessoa conferir) e confidence ("alta", "media" ou "baixa").';
 
-	$body = wp_json_encode(
-		array(
-			'model'           => tpop_ai_model(),
-			'temperature'     => 0.3,
-			'max_completion_tokens' => $max_tokens,
-			'response_format' => array( 'type' => 'json_object' ),
-			'messages'        => array(
-				array( 'role' => 'system', 'content' => $system ),
-				array( 'role' => 'user', 'content' => $prompt ),
-			),
-		)
-	);
-	$args = array(
-		'timeout' => 90,
-		'headers' => array( 'Authorization' => 'Bearer ' . $api_key, 'Content-Type' => 'application/json' ),
-		'body'    => $body,
-	);
-
-	$provider = tpop_ai_provider_label();
-	$response = wp_remote_post( tpop_ai_endpoint(), $args );
-	$http     = is_wp_error( $response ) ? 0 : (int) wp_remote_retrieve_response_code( $response );
-	if ( is_wp_error( $response ) || 429 === $http || $http >= 500 ) {
-		sleep( 3 );
-		$response = wp_remote_post( tpop_ai_endpoint(), $args );
-		$http     = is_wp_error( $response ) ? 0 : (int) wp_remote_retrieve_response_code( $response );
+	$json = tpop_ai_request_json( $system, $prompt, $max_tokens );
+	if ( is_wp_error( $json ) ) {
+		return $json;
 	}
-	if ( is_wp_error( $response ) ) {
-		return new WP_Error( 'tpop_api_request', 'Falha de conexão com ' . $provider . ': ' . $response->get_error_message() );
-	}
-	$resp = json_decode( wp_remote_retrieve_body( $response ), true );
-	if ( $http < 200 || $http >= 300 ) {
-		$message = isset( $resp['error']['message'] ) ? $resp['error']['message'] : 'A API retornou HTTP ' . $http;
-		return new WP_Error( 'tpop_api_error', 'Erro na API ' . $provider . ': ' . sanitize_text_field( $message ) );
-	}
-	$raw  = isset( $resp['choices'][0]['message']['content'] ) ? (string) $resp['choices'][0]['message']['content'] : '';
-	$raw  = trim( preg_replace( '/^```(?:json)?|```$/m', '', $raw ) );
-	$json = json_decode( $raw, true );
-	if ( ! is_array( $json ) || empty( $json['content'] ) || empty( $json['title'] ) ) {
-		return new WP_Error( 'tpop_bad_response', 'A IA retornou um conteúdo incompleto. Tente novamente.' );
+	if ( tpop_ai_word_count( $json['content'] ) < $minimum_words ) {
+		$retry_prompt = $prompt . "\nA versão anterior ficou incompleta. Reescreva a matéria inteira com pelo menos " . $minimum_words . ' palavras no campo content, mantendo todas as regras factuais e sem repetir informações. Se o dossiê não sustentar esse tamanho, não invente: responda normalmente e registre a limitação em unverified.';
+		$retry_json   = tpop_ai_request_json( $system, $retry_prompt, $max_tokens );
+		if ( is_wp_error( $retry_json ) ) {
+			return $retry_json;
+		}
+		if ( tpop_ai_word_count( $retry_json['content'] ) < $minimum_words ) {
+			return new WP_Error(
+				'tpop_short_draft',
+				'A IA não conseguiu produzir uma matéria completa com os fatos disponíveis. Acrescente mais informações verificadas pela redação e tente novamente.'
+			);
+		}
+		$json = $retry_json;
 	}
 
 	// 2) Conferência automática contra o dossiê.

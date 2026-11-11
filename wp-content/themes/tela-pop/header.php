@@ -43,6 +43,10 @@ if ( $tpop_notice ) :
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
 			</button>
 			<a class="hbtn hbtn--cta" href="#assine">Receba novidades</a>
+			<button class="hbtn hbtn--icon menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav" aria-label="Abrir menu">
+				<svg class="menu-icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+				<svg class="menu-icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+			</button>
 		</div>
 
 		<nav id="main-nav" class="main-nav" aria-label="Menu principal">
@@ -56,6 +60,7 @@ if ( $tpop_notice ) :
 				)
 			);
 			?>
+			<a class="main-nav-cta" href="#assine">Receba novidades <span aria-hidden="true">→</span></a>
 		</nav>
 
 		<div id="search-panel" class="search-panel"><?php get_search_form(); ?></div>
