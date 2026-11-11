@@ -1,0 +1,37 @@
+# Segredos e configuração local
+wp-config.php
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+.venv/
+__pycache__/
+*.py[cod]
+
+# Conteúdo e arquivos gerados pelo WordPress/XAMPP
+wp-content/uploads/
+wp-content/cache/
+wp-content/upgrade/
+wp-content/backup*/
+*.sql
+*.sql.gz
+*.log
+error_log
+
+# Pacotes de instalação e arquivos temporários
+instalar-pelo-painel/*.zip
+entregas/
+*.tmp
+Thumbs.db
+desktop.ini
+
+# Dependências, banco local e artefatos da plataforma Laravel
+plataforma-central/vendor/
+plataforma-central/node_modules/
+plataforma-central/public/build/
+plataforma-central/database/*.sqlite
+plataforma-central/storage/logs/*
+plataforma-central/storage/framework/cache/*
+plataforma-central/storage/framework/sessions/*
+plataforma-central/storage/framework/views/*

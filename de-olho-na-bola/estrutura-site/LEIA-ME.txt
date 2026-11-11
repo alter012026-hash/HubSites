@@ -1,0 +1,11 @@
+ESTRUTURA-MODELO PARA UM SITE WORDPRESS
+
+Copie a pasta wp-content deste modelo para a raiz de uma instalação WordPress
+separada. Se essa instalação já tiver uma pasta wp-content, copie apenas as
+pastas plugins e themes para dentro dela, mesclando com as pastas existentes.
+
+Coloque cada plugin em sua própria pasta dentro de wp-content/plugins e cada
+tema em sua própria pasta dentro de wp-content/themes.
+
+Este modelo contém apenas a estrutura de pastas; não inclui os arquivos do
+WordPress, banco de dados ou configuração de domínio.

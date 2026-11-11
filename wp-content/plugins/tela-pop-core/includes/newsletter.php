@@ -110,26 +110,26 @@ function tpop_nl_action_url( $action, $token ) {
 /** Moldura HTML simples e compatível com clientes de e-mail (tabelas e estilos inline). */
 function tpop_nl_email_wrap( $title, $body_html, $unsub_url = '' ) {
 	$site = esc_html( get_bloginfo( 'name' ) );
-	$out  = '<!DOCTYPE html><html><body style="margin:0;background:#f3f1e8;font-family:Arial,Helvetica,sans-serif;color:#10231a">';
-	$out .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3f1e8"><tr><td align="center" style="padding:16px">';
+	$out  = '<!DOCTYPE html><html><body style="margin:0;background:#f7f4fb;font-family:Arial,Helvetica,sans-serif;color:#241d2e">';
+	$out .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f7f4fb"><tr><td align="center" style="padding:16px">';
 	$out .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:12px;overflow:hidden">';
-	$out .= '<tr><td style="background:#07140d;padding:18px 24px;color:#c8ff3d;font-size:20px;font-weight:bold;letter-spacing:.02em">' . $site . '</td></tr>';
+	$out .= '<tr><td style="background:#171322;padding:18px 24px;color:#ff6b5f;font-size:20px;font-weight:bold;letter-spacing:.02em">' . $site . '</td></tr>';
 	$out .= '<tr><td style="padding:24px;font-size:16px;line-height:1.6">';
 	if ( $title ) {
 		$out .= '<h1 style="font-size:22px;line-height:1.25;margin:0 0 14px">' . esc_html( $title ) . '</h1>';
 	}
 	$out .= $body_html . '</td></tr>';
-	$out .= '<tr><td style="padding:16px 24px;background:#f3f1e8;font-size:12px;color:#5b6a62">';
+	$out .= '<tr><td style="padding:16px 24px;background:#f7f4fb;font-size:12px;color:#6b6576">';
 	$out .= 'Você recebe este e-mail porque se inscreveu em ' . $site . '.';
 	if ( $unsub_url ) {
-		$out .= ' <a href="' . esc_url( $unsub_url ) . '" style="color:#0f6b3f">Cancelar inscrição</a>.';
+		$out .= ' <a href="' . esc_url( $unsub_url ) . '" style="color:#7047c7">Cancelar inscrição</a>.';
 	}
 	$out .= '</td></tr></table></td></tr></table></body></html>';
 	return $out;
 }
 
 function tpop_nl_button( $url, $label ) {
-	return '<p style="margin:22px 0"><a href="' . esc_url( $url ) . '" style="background:#c8ff3d;color:#07140d;text-decoration:none;font-weight:bold;padding:13px 22px;border-radius:999px;display:inline-block">' . esc_html( $label ) . '</a></p>';
+	return '<p style="margin:22px 0"><a href="' . esc_url( $url ) . '" style="background:#ff6b5f;color:#171322;text-decoration:none;font-weight:bold;padding:13px 22px;border-radius:999px;display:inline-block">' . esc_html( $label ) . '</a></p>';
 }
 
 function tpop_nl_send_confirmation( $email, $token ) {
@@ -357,9 +357,9 @@ function tpop_nl_digest_html( $posts, $unsub_url ) {
 		$cats = get_the_category( $p->ID );
 		$body .= '<div style="padding:14px 0;border-top:1px solid #e4e2d6">';
 		if ( $cats ) {
-			$body .= '<div style="font-size:11px;font-weight:bold;letter-spacing:.08em;text-transform:uppercase;color:#0f6b3f">' . esc_html( $cats[0]->name ) . '</div>';
+			$body .= '<div style="font-size:11px;font-weight:bold;letter-spacing:.08em;text-transform:uppercase;color:#7047c7">' . esc_html( $cats[0]->name ) . '</div>';
 		}
-		$body .= '<a href="' . esc_url( get_permalink( $p ) ) . '" style="font-size:18px;font-weight:bold;color:#10231a;text-decoration:none;line-height:1.3">' . esc_html( get_the_title( $p ) ) . '</a>';
+		$body .= '<a href="' . esc_url( get_permalink( $p ) ) . '" style="font-size:18px;font-weight:bold;color:#241d2e;text-decoration:none;line-height:1.3">' . esc_html( get_the_title( $p ) ) . '</a>';
 		$ex = wp_trim_words( get_the_excerpt( $p ), 24, '…' );
 		if ( $ex ) {
 			$body .= '<div style="font-size:14px;color:#5b6a62;margin-top:4px">' . esc_html( $ex ) . '</div>';
@@ -376,14 +376,19 @@ function tpop_nl_start_campaign() {
 	if ( ! $posts ) {
 		return false;
 	}
+	global $wpdb;
+	$table = tpop_nl_table();
+	$total = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table} WHERE status = 'active'" );
 	update_option(
 		'tpop_nl_campaign',
 		array(
-			'subject' => 'Resumo da semana — ' . get_bloginfo( 'name' ) . ' (' . wp_date( 'd/m' ) . ')',
-			'ids'     => wp_list_pluck( $posts, 'ID' ),
-			'last_id' => 0,
-			'sent'    => 0,
-			'started' => time(),
+			'subject'   => 'Resumo da semana — ' . get_bloginfo( 'name' ) . ' (' . wp_date( 'd/m' ) . ')',
+			'ids'       => wp_list_pluck( $posts, 'ID' ),
+			'last_id'   => 0,
+			'sent'      => 0,
+			'processed' => 0,
+			'total'     => $total,
+			'started'   => time(),
 		),
 		false
 	);
@@ -399,10 +404,14 @@ function tpop_nl_run_batch() {
 	if ( ! is_array( $c ) || empty( $c['ids'] ) ) {
 		return;
 	}
-	$o     = tpop_nl_opts();
-	$batch = max( 5, min( 200, (int) $o['batch'] ) );
-	$table = tpop_nl_table();
-	$rows  = $wpdb->get_results(
+	$o         = tpop_nl_opts();
+	$batch     = max( 5, min( 200, (int) $o['batch'] ) );
+	$table     = tpop_nl_table();
+	$processed = isset( $c['processed'] ) ? (int) $c['processed'] : (int) $c['sent'];
+	$c['processed'] = $processed;
+	$remaining = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE status = 'active' AND id > %d", (int) $c['last_id'] ) );
+	$c['total']     = $processed + $remaining;
+	$rows           = $wpdb->get_results(
 		$wpdb->prepare( "SELECT id, email, token FROM {$table} WHERE status = 'active' AND id > %d ORDER BY id ASC LIMIT %d", (int) $c['last_id'], $batch )
 	);
 	if ( ! $rows ) {
@@ -415,8 +424,11 @@ function tpop_nl_run_batch() {
 		if ( wp_mail( $r->email, $c['subject'], tpop_nl_digest_html( $posts, $unsub ), tpop_nl_headers( $unsub ) ) ) {
 			++$c['sent'];
 		}
+		++$c['processed'];
 		$c['last_id'] = (int) $r->id;
 	}
+	$remaining = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE status = 'active' AND id > %d", (int) $c['last_id'] ) );
+	$c['total'] = (int) $c['processed'] + $remaining;
 	update_option( 'tpop_nl_campaign', $c, false );
 	// Próximo lote em 10 minutos, para respeitar limites de envio da hospedagem.
 	wp_schedule_single_event( time() + 10 * MINUTE_IN_SECONDS, 'tpop_nl_batch_event' );
@@ -581,7 +593,25 @@ function tpop_nl_admin_page() {
 			<?php echo esc_html( tpop_nl_count( 'unsubscribed' ) ); ?> cancelados
 		</p>
 		<?php if ( is_array( $camp ) ) : ?>
-			<div class="notice notice-info inline"><p>Envio em andamento: <?php echo esc_html( (int) $camp['sent'] ); ?> e-mails enviados até agora.</p></div>
+			<?php
+			$campaign_processed = isset( $camp['processed'] ) ? (int) $camp['processed'] : (int) $camp['sent'];
+			$campaign_total     = isset( $camp['total'] ) ? max( $campaign_processed, (int) $camp['total'] ) : 0;
+			$campaign_percent   = $campaign_total ? min( 100, (int) round( 100 * $campaign_processed / $campaign_total ) ) : 0;
+			?>
+			<div class="notice notice-info inline">
+				<p><strong>Envio da newsletter em andamento</strong> — <?php echo esc_html( (int) $camp['sent'] ); ?> e-mails enviados.</p>
+				<?php if ( $campaign_total ) : ?>
+					<div class="tpop-nl-progress">
+						<strong><?php echo esc_html( $campaign_processed ); ?> de <?php echo esc_html( $campaign_total ); ?> destinatários processados (<?php echo esc_html( $campaign_percent ); ?>%)</strong>
+						<div class="tpop-nl-progress__track" role="progressbar" aria-label="Progresso do envio da newsletter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="<?php echo esc_attr( $campaign_percent ); ?>">
+							<span class="tpop-nl-progress__bar" style="width:<?php echo esc_attr( $campaign_percent ); ?>%"></span>
+						</div>
+						<small>Os próximos lotes são enviados pelo agendador do WordPress.</small>
+					</div>
+				<?php else : ?>
+					<p>Aguardando destinatários ativos para iniciar o primeiro lote.</p>
+				<?php endif; ?>
+			</div>
 		<?php endif; ?>
 
 		<h2>Configurações</h2>

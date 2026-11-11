@@ -169,7 +169,7 @@ add_action(
 		}
 		?>
 <style id="tpop-admin-css">
-body.tpop-admin { --b-noite:#07140d; --b-noite2:#0e2217; --b-verde:#0f6b3f; --b-lima:#c8ff3d; --b-papel:#f4f2ea; --b-linha:#e2dfd2; --b-cinza:#5b6a62; --b-tinta:#10231a; --b-ok:#1a7f37; --b-warn:#a15c00; --b-err:#b3261e; --b-info:#1f5fbf; background:var(--b-papel); }
+body.tpop-admin { --b-noite:#171322; --b-noite2:#211a31; --b-verde:#7047c7; --b-lima:#ff6b5f; --b-papel:#f7f4fb; --b-linha:#e5dfef; --b-cinza:#6b6576; --b-tinta:#241d2e; --b-ok:#237a61; --b-warn:#a15c00; --b-err:#b3261e; --b-info:#6650a4; background:var(--b-papel); }
 body.tpop-admin #wpcontent { background:var(--b-papel); }
 body.tpop-admin #wpbody-content { padding-bottom:40px; }
 body.tpop-admin .wrap { max-width:1180px; margin:0 20px 0 20px; color:var(--b-tinta); }
@@ -214,7 +214,7 @@ body.tpop-admin .notice { border-radius:10px; border-left-width:5px; box-shadow:
 .tpop-steps { display:grid; gap:12px; grid-template-columns:1fr; margin-bottom:18px; counter-reset:step; }
 @media (min-width:700px){ .tpop-steps { grid-template-columns:repeat(5,1fr); } }
 .tpop-step { position:relative; background:#fff; border:1px solid var(--b-linha); border-radius:16px; padding:16px 16px 14px; text-decoration:none; color:inherit; display:flex; flex-direction:column; gap:6px; transition:transform .15s, box-shadow .15s; }
-a.tpop-step:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(7,20,13,.08); color:inherit; }
+a.tpop-step:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(23,19,34,.08); color:inherit; }
 .tpop-step__top { display:flex; align-items:center; justify-content:space-between; }
 .tpop-step__n { width:26px; height:26px; border-radius:50%; background:var(--b-noite); color:var(--b-lima); font-weight:800; font-size:13px; display:grid; place-items:center; }
 .tpop-step--human .tpop-step__n { background:var(--b-lima); color:var(--b-noite); }
@@ -222,7 +222,7 @@ a.tpop-step:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(7,20,
 .tpop-step__num { font-size:34px; line-height:1; font-weight:800; letter-spacing:-.02em; }
 .tpop-step__num small { font-size:12px; font-weight:600; color:var(--b-cinza); letter-spacing:0; margin-left:4px; }
 .tpop-step p { margin:0; color:var(--b-cinza); font-size:12.5px; line-height:1.4; }
-.tpop-step--alert { border-color:var(--b-lima); box-shadow:0 0 0 3px rgba(200,255,61,.45); }
+.tpop-step--alert { border-color:var(--b-lima); box-shadow:0 0 0 3px rgba(255,107,95,.24); }
 
 /* Tabelas e listas */
 .tpop-ui table.widefat { border:0; box-shadow:none; background:transparent; }
@@ -252,7 +252,7 @@ a.tpop-step:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(7,20,
 .tpop-field__help { color:var(--b-cinza); font-size:12.5px; margin:4px 0 0; line-height:1.45; }
 .tpop-field input[type=text], .tpop-field input[type=email], .tpop-field input[type=password], .tpop-field input[type=number], .tpop-field select, .tpop-field textarea { border-radius:10px; border:1px solid #c9c6b8; padding:7px 12px; min-height:38px; max-width:100%; background:#fff; }
 .tpop-field input[type=text], .tpop-field input[type=email], .tpop-field input[type=password], .tpop-field textarea { width:100%; max-width:520px; }
-.tpop-field input:focus, .tpop-field select:focus, .tpop-field textarea:focus { border-color:var(--b-verde); box-shadow:0 0 0 3px rgba(15,107,63,.18); outline:0; }
+.tpop-field input:focus, .tpop-field select:focus, .tpop-field textarea:focus { border-color:var(--b-verde); box-shadow:0 0 0 3px rgba(112,71,199,.18); outline:0; }
 .tpop-unit { color:var(--b-cinza); font-size:13px; margin-left:6px; }
 .tpop-toggle { display:inline-flex; align-items:center; gap:12px; cursor:pointer; }
 .tpop-toggle input { position:absolute; opacity:0; width:1px; height:1px; }
@@ -268,9 +268,9 @@ a.tpop-step:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(7,20,
 .tpop-radio input { position:absolute; opacity:0; }
 .tpop-radio strong { display:block; font-size:14.5px; margin-bottom:4px; }
 .tpop-radio span { color:var(--b-cinza); font-size:12.5px; line-height:1.45; display:block; }
-.tpop-radio:has(input:checked) { border-color:var(--b-noite); background:#f8ffe0; box-shadow:0 0 0 3px rgba(200,255,61,.5); }
+.tpop-radio:has(input:checked) { border-color:var(--b-noite); background:#fff0ee; box-shadow:0 0 0 3px rgba(255,107,95,.24); }
 .tpop-radio:has(input:focus-visible) { outline:3px solid var(--b-verde); outline-offset:2px; }
-.tpop-savebar { position:sticky; bottom:0; background:rgba(244,242,234,.94); backdrop-filter:blur(6px); padding:14px 0; border-top:1px solid var(--b-linha); display:flex; gap:10px; align-items:center; }
+.tpop-savebar { position:sticky; bottom:0; background:rgba(247,244,251,.94); backdrop-filter:blur(6px); padding:14px 0; border-top:1px solid var(--b-linha); display:flex; gap:10px; align-items:center; }
 .tpop-secret { font-size:12.5px; color:var(--b-ok); font-weight:600; }
 
 /* Fila de revisão */
@@ -279,12 +279,12 @@ a.tpop-step:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(7,20,
 .tpop-rv__head { padding:18px 20px 12px; }
 .tpop-rv__head h2 { margin:6px 0 6px; font-size:19px; line-height:1.25; padding:0; font-weight:800; }
 .tpop-rv__meta { color:var(--b-cinza); font-size:12.5px; display:flex; gap:6px 14px; flex-wrap:wrap; }
-.tpop-quality { margin-top:12px; max-width:520px; padding:10px 12px; border-radius:11px; background:#f4f2ea; }
+.tpop-quality { margin-top:12px; max-width:520px; padding:10px 12px; border-radius:11px; background:#f7f4fb; }
 .tpop-quality__top { display:flex; justify-content:space-between; gap:10px; font-size:12px; color:var(--b-noite); }
 .tpop-quality__track { height:8px; margin:7px 0 5px; overflow:hidden; border-radius:99px; background:#dedbd0; }
 .tpop-quality__track span { display:block; height:100%; border-radius:inherit; background:#b3261e; }
 .tpop-quality--warn .tpop-quality__track span { background:#bd7b00; }
-.tpop-quality--good .tpop-quality__track span { background:#176b42; }
+.tpop-quality--good .tpop-quality__track span { background:#7047c7; }
 .tpop-quality small { color:var(--b-cinza); font-size:11px; }
 .tpop-quality__parts { display:block; margin-bottom:3px; line-height:1.6; }
 .tpop-rv__body { padding:0 20px 14px; display:grid; gap:14px; grid-template-columns:1fr; }
@@ -292,7 +292,7 @@ a.tpop-step:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(7,20,
 .tpop-rv h4 { margin:0 0 6px; font-size:12px; text-transform:uppercase; letter-spacing:.07em; color:var(--b-cinza); }
 .tpop-rv ul { margin:0; padding-left:18px; font-size:13.5px; } .tpop-rv li { margin-bottom:3px; }
 .tpop-rv__flags { background:#fff8e6; border:1px solid #f1dca4; border-radius:12px; padding:12px 14px; }
-.tpop-rv__src { background:#f4f2ea; border-radius:12px; padding:12px 14px; }
+.tpop-rv__src { background:#f7f4fb; border-radius:12px; padding:12px 14px; }
 .tpop-rv__foot { border-top:1px solid var(--b-linha); padding:14px 20px; background:#faf9f4; display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
 .tpop-rv__foot form { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:0; }
 .tpop-empty { text-align:center; padding:42px 20px; color:var(--b-cinza); }
@@ -305,7 +305,192 @@ body.tpop-admin .postbox { border-radius:14px; border-color:var(--b-linha); box-
 body.tpop-admin .postbox .postbox-header { border-radius:14px 14px 0 0; }
 body.tpop-admin .page-title-action { border-radius:999px; background:var(--b-noite); color:#fff; border-color:var(--b-noite); }
 body.tpop-admin .page-title-action:hover { background:var(--b-verde); color:#fff; }
+
+#tpop-operation-progress[hidden] { display:none !important; }
+#tpop-operation-progress { position:fixed; inset:0; z-index:100000; display:grid; place-items:center; padding:20px; background:rgba(23,19,34,.62); }
+.tpop-progress-dialog { width:min(440px,100%); padding:24px; border:1px solid var(--b-linha); border-radius:18px; background:#fff; color:var(--b-tinta); box-shadow:0 20px 60px rgba(0,0,0,.24); }
+.tpop-progress-dialog h2 { margin:0 0 8px; font-size:19px; line-height:1.3; }
+.tpop-progress-dialog p { margin:0; color:var(--b-cinza); line-height:1.5; }
+.tpop-progress-dialog__track { height:10px; margin:18px 0 12px; overflow:hidden; border-radius:99px; background:#e9e4f0; }
+.tpop-progress-dialog__bar { display:block; width:38%; height:100%; border-radius:inherit; background:var(--b-verde); animation:tpop-progress-slide 1.4s ease-in-out infinite; }
+.tpop-progress-dialog__hint { font-size:12px; }
+@keyframes tpop-progress-slide { from { transform:translateX(-110%); } to { transform:translateX(370%); } }
+@media (prefers-reduced-motion:reduce) { .tpop-progress-dialog__bar { width:100%; animation:none; opacity:.72; } }
+.tpop-nl-progress { margin:10px 0 2px; max-width:540px; }
+.tpop-nl-progress__track { height:10px; margin:6px 0 4px; overflow:hidden; border-radius:99px; background:#e9e4f0; }
+.tpop-nl-progress__bar { display:block; height:100%; border-radius:inherit; background:var(--b-verde); transition:width .25s ease; }
+.tpop-nl-progress small { color:var(--b-cinza); }
 </style>
+		<?php
+	}
+);
+
+add_action(
+	'admin_footer',
+	function () {
+		if ( ! tpop_is_admin_screen() ) {
+			return;
+		}
+		?>
+<div id="tpop-operation-progress" hidden aria-hidden="true">
+	<section class="tpop-progress-dialog" role="dialog" aria-modal="true" aria-labelledby="tpop-progress-title" aria-describedby="tpop-progress-message" tabindex="-1">
+		<h2 id="tpop-progress-title">Operação em andamento</h2>
+		<p id="tpop-progress-message" aria-live="polite"></p>
+		<div class="tpop-progress-dialog__track" role="progressbar" aria-label="Progresso da operação">
+			<span class="tpop-progress-dialog__bar"></span>
+		</div>
+		<p class="tpop-progress-dialog__hint">Aguarde sem fechar ou atualizar esta página.</p>
+	</section>
+</div>
+<script>
+(function () {
+	'use strict';
+
+	var overlay = document.getElementById('tpop-operation-progress');
+	if (!overlay) {
+		return;
+	}
+
+	var title = document.getElementById('tpop-progress-title');
+	var message = document.getElementById('tpop-progress-message');
+	var dialog = overlay.querySelector('.tpop-progress-dialog');
+	var started = false;
+	var pendingForm = null;
+
+	function startProgress(heading, detail) {
+		if (started) {
+			return false;
+		}
+		started = true;
+		title.textContent = heading;
+		message.textContent = detail;
+		overlay.hidden = false;
+		overlay.setAttribute('aria-hidden', 'false');
+		document.body.setAttribute('aria-busy', 'true');
+		dialog.focus();
+		return true;
+	}
+
+	function progressForAction(action, value) {
+		if (action === 'tpop_run' && value === 'full') {
+			return ['Executando o fluxo completo', 'Coleta, triagem e geração de rascunhos por IA estão em andamento.'];
+		}
+		if (action === 'tpop_run' || action === 'tpop_consultar_fontes') {
+			return ['Coletando feeds RSS', 'Lendo as fontes e verificando pautas novas e duplicadas.'];
+		}
+		if (action === 'tpop_gerar_rascunho') {
+			return ['Gerando rascunho com IA', 'Preparando os dados da pauta, aguardando a IA e conferindo o texto.'];
+		}
+		if (action === 'tpop_test_openai') {
+			return ['Testando conexão com a OpenAI', 'Aguardando a resposta do serviço.'];
+		}
+		if (action === 'tpop_test_groq') {
+			return ['Testando conexão com a GroqCloud', 'Aguardando a resposta do serviço.'];
+		}
+		return null;
+	}
+
+	function submitAfterPaint(form, submitter) {
+		pendingForm = form;
+		requestAnimationFrame(function () {
+			requestAnimationFrame(function () {
+				var isSubmitButton = submitter && submitter.form === form && (
+					submitter.matches('button[type="submit"], button:not([type]), input[type="submit"], input[type="image"]')
+				);
+				if (typeof form.requestSubmit === 'function') {
+					if (isSubmitButton) {
+						form.requestSubmit(submitter);
+					} else {
+						form.requestSubmit();
+					}
+					return;
+				}
+				if (isSubmitButton && submitter.name) {
+					var hidden = document.createElement('input');
+					hidden.type = 'hidden';
+					hidden.name = submitter.name;
+					hidden.value = submitter.value;
+					form.appendChild(hidden);
+				}
+				HTMLFormElement.prototype.submit.call(form);
+			});
+		});
+	}
+
+	document.addEventListener('submit', function (event) {
+		var form = event.target;
+		if (!(form instanceof HTMLFormElement) || event.defaultPrevented) {
+			return;
+		}
+		if (form === pendingForm) {
+			pendingForm = null;
+			return;
+		}
+
+		var submitter = event.submitter || document.activeElement;
+		var actionField = form.querySelector('input[name="action"]');
+		var action = actionField ? actionField.value : '';
+		var value = submitter && submitter.name === 'what' ? submitter.value : '';
+		var progress = progressForAction(action, value);
+
+		if (!progress && form.id === 'posts-filter') {
+			var selectedAction = Array.from(form.querySelectorAll('select[name^="action"]'))
+				.map(function (select) { return select.value; })
+				.find(function (selected) { return selected && selected !== '-1'; });
+			if (selectedAction === 'tpop_generate_ai') {
+				var count = form.querySelectorAll('input[name="post[]"]:checked').length;
+				if (count > 0) {
+					progress = [
+						'Gerando rascunhos com IA',
+						count > 10
+							? 'Até 10 das ' + count + ' pautas selecionadas serão processadas nesta rodada.'
+							: count + ' pauta(s) selecionada(s) serão processadas nesta rodada.'
+					];
+				}
+			}
+		}
+
+		if (progress) {
+			event.preventDefault();
+			if (startProgress(progress[0], progress[1])) {
+				submitAfterPaint(form, submitter);
+			}
+		}
+	}, true);
+
+	document.addEventListener('click', function (event) {
+		if (started) {
+			event.preventDefault();
+			return;
+		}
+		if (!(event.target instanceof Element)) {
+			return;
+		}
+		var link = event.target.closest('a[href]');
+		if (!link || link.target === '_blank' || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+			return;
+		}
+		var url;
+		try {
+			url = new URL(link.href, window.location.href);
+		} catch (error) {
+			return;
+		}
+		if (url.origin !== window.location.origin || !/\/admin-post\.php$/.test(url.pathname)) {
+			return;
+		}
+		var progress = progressForAction(url.searchParams.get('action') || '', '');
+		if (progress && startProgress(progress[0], progress[1])) {
+			event.preventDefault();
+			requestAnimationFrame(function () {
+				requestAnimationFrame(function () {
+					window.location.assign(url.href);
+				});
+			});
+		}
+	}, true);
+}());
+</script>
 		<?php
 	}
 );

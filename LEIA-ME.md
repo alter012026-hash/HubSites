@@ -33,3 +33,7 @@ O tipo de conteúdo **Filme ou série** guarda ficha independente do artigo: tip
 ## Próximos passos
 
 Consulte `INSTALACAO-WORDPRESS.md` para instalação no XAMPP e `FLUXO-EDITORIAL.md` para as etapas de configuração e uso.
+
+## Outro projeto neste repositório
+
+O projeto **De Olho na Bola** é mantido separadamente em [`de-olho-na-bola/`](de-olho-na-bola/), com tema, plugin e plataforma central próprios. Consulte o [guia do projeto](de-olho-na-bola/LEIA-ME.md) antes de instalar; não misture seus arquivos com os do Top Tela.

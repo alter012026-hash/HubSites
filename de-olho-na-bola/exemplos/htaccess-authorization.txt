@@ -1,0 +1,5 @@
+# Se a API responder 401 mesmo com o token certo, o Apache pode estar removendo o
+# cabeçalho Authorization. Acrescente ao .htaccess da raiz do WordPress (acima do bloco do WordPress):
+RewriteEngine On
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+# (Alternativa sem mexer no .htaccess: o exemplo em Python também envia o cabeçalho X-BEC-Token.)
