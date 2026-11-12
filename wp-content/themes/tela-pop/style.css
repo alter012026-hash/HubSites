@@ -70,13 +70,11 @@ button { font-family: inherit; }
 .site-header { position: sticky; top: 0; z-index: 60; background: var(--noite); color: #fff; }
 .admin-bar .site-header { top: 46px; }
 .header-inner { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; padding-top: 0; padding-bottom: 0; }
-.brand { display: inline-flex; align-items: center; gap: 7px; height: var(--altura-header); color: #fff; text-decoration: none; font-family: var(--display); font-weight: 800; font-size: 20px; letter-spacing: .02em; text-transform: uppercase; line-height: 1; margin-right: auto; min-width: 0; white-space: nowrap; }
+.brand { display: inline-flex; align-items: center; min-height: var(--altura-header); color: #fff; text-decoration: none; margin-right: auto; min-width: 0; }
 .brand:hover { color: #fff; }
-.logo-txt { white-space: nowrap; }
-.logo-txt .eye { display: inline-block; width: 1.12em; height: .84em; vertical-align: -.06em; margin: 0 .02em; }
-.brand em, .logo-txt em { font-style: normal; color: var(--lima); }
 .custom-logo-link { display: inline-flex; align-items: center; height: var(--altura-header); margin-right: auto; }
 .custom-logo { max-height: 38px; width: auto; }
+.station-logo { display: block; width: clamp(122px, 18vw, 235px); max-width: 100%; height: auto; object-fit: contain; }
 
 .header-actions { display: flex; gap: 8px; flex: none; }
 .hbtn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 40px; min-width: 40px; border-radius: 999px; border: 0; cursor: pointer; font-weight: 800; font-size: 13px; text-decoration: none; letter-spacing: .02em; }
@@ -733,11 +731,6 @@ a:hover { color: #bd365d; }
 .site-header { background: rgba(27,20,36,.97); box-shadow: 0 10px 32px rgba(27,14,39,.2); }
 .site-header.is-scrolled { background: rgba(27,20,36,.94); }
 .brand, .custom-logo-link { color: #fff; }
-.brand { font-family: var(--texto); }
-.brand em, .logo-txt em { color: var(--lima); }
-.logo-txt { display: inline-flex; align-items: center; gap: 9px; font-size: 1em; letter-spacing: .055em; white-space: nowrap; }
-.logo-txt em { font-style: normal; }
-.logo-txt .trainmark { width: 38px; height: 32px; color: var(--lima); flex: none; overflow: visible; }
 .main-nav { border-color: rgba(255,255,255,.12); }
 .main-nav a { background: rgba(255,255,255,.075); color: #f5edf6; }
 .main-nav a:hover { background: rgba(255,91,122,.18); color: #fff; }
@@ -791,7 +784,7 @@ a:hover { color: #bd365d; }
 .site-footer { background: radial-gradient(ellipse at 78% 0%, #553081, #1b1424 62%); color: #e0d4e5; }
 .site-footer::before { background: linear-gradient(90deg, var(--lima), var(--gramado), #b58aff); }
 .footer-note { color: #b3a5b8; }
-.footer-brand { font-family: var(--texto); }
+.footer-brand .station-logo { width: min(260px, 100%); }
 .catalog-section { padding-top: 28px; border-top: 1px solid var(--linha); }
 .welcome-panel { margin-top: 24px; border-radius: 22px; }
 .button--accent { display: inline-flex; align-items: center; min-height: 46px; margin-top: 12px; padding: 0 18px; border-radius: 999px; background: var(--lima); color: #241321; font-weight: 900; text-decoration: none; }
@@ -899,9 +892,6 @@ a:hover { color: #bd365d; }
 [data-theme="light"] .brand,
 [data-theme="light"] .custom-logo-link,
 [data-theme="light"] .brand:hover { color: var(--noite); }
-[data-theme="light"] .brand em,
-[data-theme="light"] .logo-txt em,
-[data-theme="light"] .logo-txt .playmark { color: var(--gramado); }
 [data-theme="light"] .main-nav { border-color: rgba(112,71,215,.14); }
 [data-theme="light"] .main-nav::after { background: linear-gradient(90deg, rgba(247,244,251,0), rgba(247,244,251,.92)); }
 [data-theme="light"] .main-nav a {
@@ -1030,11 +1020,7 @@ a:hover { color: #bd365d; }
 		column-gap: 8px;
 	}
 
-	.brand {
-		font-size: clamp(14px, 4.4vw, 19px);
-	}
-	.logo-txt { gap: 6px; letter-spacing: .025em; }
-	.logo-txt .trainmark { width: 32px; height: 28px; }
+	.station-logo { width: min(42vw, 160px); }
 
 	.header-actions { gap: 5px; }
 	.header-actions .hbtn--cta { display: none; }
@@ -1182,9 +1168,7 @@ a:hover { color: #bd365d; }
 }
 
 @media (max-width: 359px) {
-	.brand { font-size: 13px; }
-	.logo-txt { gap: 4px; }
-	.logo-txt .trainmark { width: 28px; height: 26px; }
+	.station-logo { width: min(39vw, 138px); }
 	.header-actions { gap: 3px; }
 	.header-actions .hbtn--icon { width: 34px; min-width: 34px; height: 34px; }
 }
