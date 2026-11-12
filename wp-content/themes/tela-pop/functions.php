@@ -118,11 +118,11 @@ function tpop_theme_widgets() {
 add_action( 'widgets_init', 'tpop_theme_widgets' );
 
 function tpop_theme_customize( $wp_customize ) {
-	$wp_customize->add_section( 'tpop_home', array( 'title' => 'Tela Pop — Topo do site' ) );
+	$wp_customize->add_section( 'tpop_home', array( 'title' => 'Estação Cinema — Identidade do site' ) );
 	$wp_customize->add_setting(
 		'tpop_ticker',
 		array(
-			'default'           => 'Estreias, críticas e histórias para sua próxima sessão',
+			'default'           => 'Sua próxima parada: grandes histórias.',
 			'sanitize_callback' => 'sanitize_text_field',
 		)
 	);
@@ -175,9 +175,9 @@ function tpop_eye_svg() {
 	return '<svg class="eye" viewBox="0 0 32 24" aria-hidden="true" focusable="false"><path d="M2 12C6 5 11 3 16 3s10 2 14 9c-4 7-9 9-14 9S6 19 2 12z" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/><circle cx="16" cy="12" r="6.6" fill="#55edc2"/><circle cx="16" cy="12" r="3" fill="#091326"/><circle cx="17.6" cy="10.3" r="1.1" fill="#fff"/></svg>';
 }
 
-/** Logotipo textual compacto para o portal. */
+/** Logotipo compacto com locomotiva a vapor para o portal. */
 function tpop_logo_html() {
-	return '<span class="logo-txt" aria-label="Tela Pop"><svg class="playmark" viewBox="0 0 36 36" aria-hidden="true"><rect x="1.5" y="1.5" width="33" height="33" rx="11" fill="currentColor"/><path d="M15 11.5v13l10-6.5z" fill="#111019"/></svg><span>TELA <em>POP</em></span></span>';
+	return '<span class="logo-txt" aria-label="Estação Cinema"><svg class="trainmark" viewBox="0 0 48 36" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4"><path d="M16 7c-2-2-1-4 1-5m6 5c-1-2 0-3 2-4"/><path d="M7 12h20v15H7zM27 16h9l5 6v5H27z"/><path d="M31 19h4l3 4h-7zM12 17h10M12 22h10M18 27l-5 5m10-5 5 5m-18 2h22"/></g><path d="M10 10h14v4H10zm1 17a3.5 3.5 0 1 0 7 0 3.5 3.5 0 0 0-7 0zm12 0a3.5 3.5 0 1 0 7 0 3.5 3.5 0 0 0-7 0zm-2-15 2-5h5v5" fill="currentColor"/><circle cx="24.5" cy="27" r="1" fill="#24172f"/><circle cx="13.5" cy="27" r="1" fill="#24172f"/></svg><span>ESTAÇÃO <em>CINEMA</em></span></span>';
 }
 
 /** Sigla do clube (ex.: Flamengo = FLA, São Paulo = SP) e matiz estável para o escudo genérico. */

@@ -58,7 +58,7 @@ $hero_q = new WP_Query(
 			<span class="eyebrow">FILMES · SÉRIES · STREAMING</span>
 			<h1>Histórias que continuam depois dos créditos.</h1>
 			<p class="description">Críticas, estreias e guias para escolher o que assistir. Os textos feitos com IA chegam como rascunho e passam pela redação antes de serem publicados.</p>
-			<a class="button button--accent" href="<?php echo esc_url( home_url( '/category/filmes/' ) ); ?>">Explorar o Tela Pop</a>
+			<a class="button button--accent" href="<?php echo esc_url( home_url( '/category/filmes/' ) ); ?>">Explorar a Estação</a>
 		</section>
 	<?php endif; ?>
 

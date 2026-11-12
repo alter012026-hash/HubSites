@@ -15,7 +15,7 @@
 		<div class="footer-grid">
 			<div>
 				<div class="footer-brand"><?php echo tpop_logo_html(); // phpcs:ignore WordPress.Security.EscapeOutput ?></div>
-				<p>Filmes e séries com contexto, opinião e informação conferida.</p>
+				<p>Sua próxima parada: grandes histórias do cinema e das séries.</p>
 				<?php if ( is_active_sidebar( 'tpop-footer' ) ) { dynamic_sidebar( 'tpop-footer' ); } ?>
 			</div>
 			<div>
@@ -36,7 +36,7 @@
 				?>
 			</div>
 		</div>
-		<p class="footer-note">&copy; <?php echo esc_html( wp_date( 'Y' ) ); ?> Tela Pop. Escudos e marcas pertencem aos respectivos titulares e são citados apenas para identificação.</p>
+		<p class="footer-note">&copy; <?php echo esc_html( wp_date( 'Y' ) ); ?> <?php echo esc_html( get_bloginfo( 'name' ) ); ?>. Pôsteres, imagens e marcas pertencem aos respectivos titulares e identificam filmes e séries.</p>
 	</div>
 </footer>
 <?php wp_footer(); ?>

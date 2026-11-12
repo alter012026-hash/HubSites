@@ -1,6 +1,6 @@
 /*
-Theme Name: Tela Pop
-Description: Portal cinematográfico de filmes e séries, mobile first, com catálogo, críticas, guias e suporte ao Tela Pop Core.
+Theme Name: Estação Cinema
+Description: Portal cinematográfico de filmes e séries com identidade inspirada nas antigas estações de cinema.
 Version: 1.2.0
 Requires at least: 6.0
 Requires PHP: 7.4
@@ -538,7 +538,7 @@ a:hover { color: #173fba; }
 	.has-motion [data-reveal] { opacity: 1; transform: none; }
 }
 
-/* Tema escuro — ameixa profunda, violeta e coral da identidade Tela Pop. */
+/* Tema escuro — ameixa profunda, violeta e coral da identidade Estação Cinema. */
 .theme-toggle .theme-icon-sun { display: none; }
 [data-theme="dark"] .theme-toggle .theme-icon-moon { display: none; }
 [data-theme="dark"] .theme-toggle .theme-icon-sun { display: block; }
@@ -707,7 +707,7 @@ a:hover { color: #173fba; }
 	.hero-body h2 { max-width: 17ch; font-size: 66px; }
 }
 
-/* Tela Pop: identidade de cinema e cultura pop com ameixa, violeta e coral. */
+/* Estação Cinema: identidade de cinema com ameixa, violeta e coral. */
 :root {
 	--noite: #1b1424;
 	--noite-2: #291c34;
@@ -735,8 +735,9 @@ a:hover { color: #bd365d; }
 .brand, .custom-logo-link { color: #fff; }
 .brand { font-family: var(--texto); }
 .brand em, .logo-txt em { color: var(--lima); }
-.logo-txt { display: inline-flex; align-items: center; gap: 9px; font-size: 1em; letter-spacing: .055em; }
-.logo-txt .playmark { width: 32px; height: 32px; color: var(--lima); flex: none; }
+.logo-txt { display: inline-flex; align-items: center; gap: 9px; font-size: 1em; letter-spacing: .055em; white-space: nowrap; }
+.logo-txt em { font-style: normal; }
+.logo-txt .trainmark { width: 38px; height: 32px; color: var(--lima); flex: none; overflow: visible; }
 .main-nav { border-color: rgba(255,255,255,.12); }
 .main-nav a { background: rgba(255,255,255,.075); color: #f5edf6; }
 .main-nav a:hover { background: rgba(255,91,122,.18); color: #fff; }
@@ -1030,8 +1031,10 @@ a:hover { color: #bd365d; }
 	}
 
 	.brand {
-		font-size: clamp(16px, 4.8vw, 21px);
+		font-size: clamp(14px, 4.4vw, 19px);
 	}
+	.logo-txt { gap: 6px; letter-spacing: .025em; }
+	.logo-txt .trainmark { width: 32px; height: 28px; }
 
 	.header-actions { gap: 5px; }
 	.header-actions .hbtn--cta { display: none; }
@@ -1176,4 +1179,12 @@ a:hover { color: #bd365d; }
 	.post-body object {
 		max-width: 100%;
 	}
+}
+
+@media (max-width: 359px) {
+	.brand { font-size: 13px; }
+	.logo-txt { gap: 4px; }
+	.logo-txt .trainmark { width: 28px; height: 26px; }
+	.header-actions { gap: 3px; }
+	.header-actions .hbtn--icon { width: 34px; min-width: 34px; height: 34px; }
 }

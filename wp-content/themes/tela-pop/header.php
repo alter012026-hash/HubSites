@@ -3,7 +3,7 @@
 <head>
 	<meta charset="<?php bloginfo( 'charset' ); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-	<meta name="theme-color" content="#111019">
+	<meta name="theme-color" content="#24172f">
 	<script>(function(){var p='';try{p=localStorage.getItem('tpop-theme')}catch(e){}if(p!=='light'&&p!=='dark'){try{p=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}catch(e){p='light'}}document.documentElement.setAttribute('data-theme',p)})();</script>
 	<?php wp_head(); ?>
 </head>
@@ -22,7 +22,7 @@ if ( $tpop_notice ) :
 <?php endif; ?>
 
 <div class="topbar">
-	<div class="wrap"><span class="dot" aria-hidden="true"></span><span><?php echo esc_html( get_theme_mod( 'tpop_ticker', 'Estreias, críticas e histórias para sua próxima sessão' ) ); ?></span></div>
+	<div class="wrap"><span class="dot" aria-hidden="true"></span><span><?php echo esc_html( get_theme_mod( 'tpop_ticker', 'Sua próxima parada: grandes histórias.' ) ); ?></span></div>
 </div>
 
 <header class="site-header">
