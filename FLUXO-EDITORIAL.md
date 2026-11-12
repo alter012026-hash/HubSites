@@ -1,4 +1,4 @@
-# Fluxo editorial Tela Pop
+# Fluxo editorial Estação Cinema
 
 ```text
 Fonte RSS → pauta com evidências → artigo gerado por IA → revisão humana → publicação no WordPress
@@ -25,6 +25,11 @@ A IA só afirma fatos incluídos no dossiê. Datas, elenco, direção, temporada
 ## Revisão e postagem
 
 A equipe abre o rascunho, confere o link original e os pontos de atenção, edita o texto e salva a aprovação humana. Só então publica pelo editor do WordPress. A trava exige fonte e revisão concluída para posts vindos do fluxo editorial.
+
+Matérias devem ser originais e proporcionais às evidências disponíveis. Se o
+material importado for insuficiente, confira a fonte e acrescente fatos
+confirmados pela redação; não complete lacunas com informações inventadas. A
+extração de texto de uma fonte exige autorização registrada.
 
 ## Navegação e conteúdo público
 

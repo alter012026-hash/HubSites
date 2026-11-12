@@ -1,39 +1,46 @@
-# Tela Pop — portal WordPress de filmes e séries
+# Estação Cinema — portal WordPress de filmes e séries
 
-Projeto independente do portal De Olho na Bola. Usa o mesmo fluxo editorial: **busca RSS → pauta → geração por IA → revisão humana → publicação**.
+**Estação Cinema** é a marca pública do portal. Seu slogan é **“Sua próxima
+parada: grandes histórias.”** Os diretórios e identificadores internos ainda
+usam `tela-pop` por compatibilidade.
 
-## Identidade visual
+## Componentes
 
-- **Marca de trabalho:** Tela Pop.
-- **Paleta:** ameixa quase preto `#17121D`, creme `#F7F4F1`, dourado `#FFC86A`, coral `#FF637E` e roxo `#74427F`.
-- **Tipografia:** DM Serif Display nos títulos e Manrope nos textos e controles.
-- **Navegação:** mobile first; no celular, marca e ações ficam no topo e o menu centralizado pode ser deslizado horizontalmente. No desktop, marca, menu e ações ficam em colunas independentes.
-- **Home:** destaque editorial, últimas histórias, filmes, séries, críticas, lançamentos, guias de streaming, listas e catálogo.
+- `wp-content/plugins/tela-pop-core/`: fontes RSS, pautas, dossiê de fatos,
+  geração por IA, SEO, fila de revisão e proteção contra publicação sem revisão.
+- `wp-content/themes/tela-pop/`: tema responsivo, catálogo de filmes e séries,
+  páginas de leitura, locomotiva no logotipo e modos claro/escuro.
 
-## O pacote
-
-- `wp-content/plugins/tela-pop-core/`: coleta RSS, pautas, dossiê, geração por IA, SEO, fila de revisão e trava de publicação.
-- `wp-content/themes/tela-pop/`: tema responsivo, catálogo de filmes e séries, páginas de leitura e identidade visual.
-- `instalar-pelo-painel/`: ZIPs do plugin e do tema, prontos para enviar no WordPress.
+O fluxo editorial é **RSS → pauta → dossiê → rascunho com IA → revisão humana →
+publicação**. A IA não publica por conta própria.
 
 ## Fluxo editorial
 
-1. Cadastre fontes RSS de entretenimento em **Tela Pop → Fontes e feeds**.
-2. Consulte os feeds. Os itens encontrados entram como pautas; a IA só usa os fatos presentes no dossiê.
-3. Abra uma pauta e selecione um modelo: notícia, estreia, crítica, guia de streaming ou lista.
-4. Gere o texto. A IA cria um post pendente de revisão; não publica por conta própria.
-5. Confira a fonte, nomes, datas, elenco e disponibilidade. Edite e marque a revisão concluída antes de publicar.
+1. Cadastre fontes RSS em **Tela Pop → Fontes e feeds**.
+2. Consulte os feeds; os itens encontrados entram como pautas.
+3. Abra uma pauta e escolha um modelo editorial.
+4. Gere o rascunho e confira a fonte, os fatos e os alertas na fila de revisão.
+5. Edite e conclua a revisão humana antes de publicar pelo WordPress.
 
-O leitor de matéria completa só deve ser usado para fontes com autorização registrada. O sistema mantém RSS e referências como fonte, atribui fatos e sinaliza pontos a conferir. A disponibilidade em streaming pode mudar; confirme antes de publicar.
+O artigo gerado deve ser original. O sistema exige evidências no dossiê e não
+deve completar lacunas com fatos inventados. A leitura de texto da fonte depende
+da autorização registrada; feeds sem essa permissão fornecem apenas título,
+resumo e link. Confirme dados mutáveis, como disponibilidade em streaming,
+antes de publicar.
 
-## Catálogo
+## Instalação e configuração
 
-O tipo de conteúdo **Filme ou série** guarda ficha independente do artigo: tipo, ano, plataformas e trailer oficial. Use a imagem destacada como pôster e confirme a disponibilidade antes de cadastrar. O portal pode publicar artigos pela fila de IA mesmo quando ainda não existe ficha de catálogo.
+Consulte [INSTALACAO-WORDPRESS.md](INSTALACAO-WORDPRESS.md) para copiar os
+arquivos-fonte para o WordPress, ativar o plugin e o tema e configurar os
+provedores de IA e os feeds. Não há ZIPs de instalação versionados neste
+repositório.
 
-## Próximos passos
+Para detalhes sobre evidências, geração e revisão, consulte
+[FLUXO-EDITORIAL.md](FLUXO-EDITORIAL.md).
 
-Consulte `INSTALACAO-WORDPRESS.md` para instalação no XAMPP e `FLUXO-EDITORIAL.md` para as etapas de configuração e uso.
+## Outro projeto no repositório
 
-## Outro projeto neste repositório
-
-O projeto **De Olho na Bola** é mantido separadamente em [`de-olho-na-bola/`](de-olho-na-bola/), com tema, plugin e plataforma central próprios. Consulte o [guia do projeto](de-olho-na-bola/LEIA-ME.md) antes de instalar; não misture seus arquivos com os do Top Tela.
+O portal **De Olho na Bola** e sua plataforma central Laravel ficam
+separadamente em [`de-olho-na-bola/`](de-olho-na-bola/). Consulte o
+[guia do projeto](de-olho-na-bola/LEIA-ME.md); não misture suas pastas com as da
+Estação Cinema.
