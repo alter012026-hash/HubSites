@@ -89,13 +89,13 @@ function tpop_pauta_news_age_error( $pauta_id ) {
 	}
 	$timestamp = absint( get_post_meta( $pauta_id, '_tpop_ts_origem', true ) );
 	if ( ! $timestamp ) {
-		return 'A fonte não informou uma data de publicação verificável. Não gere como notícia atual.';
+		return 'A fonte não informou uma data de publicação verificável. Confira a data na fonte original antes de aprovar.';
 	}
 	if ( $timestamp > time() + 15 * MINUTE_IN_SECONDS ) {
-		return 'A data informada pela fonte está no futuro. Confira o feed antes de gerar o rascunho.';
+		return 'A data informada pela fonte está no futuro. Confira a data na fonte original antes de aprovar.';
 	}
 	if ( $timestamp < time() - 3 * DAY_IN_SECONDS ) {
-		return 'Notícia fora da janela de 72 horas (publicada em ' . wp_date( 'd/m/Y H:i', $timestamp ) . '). Não gere como notícia atual.';
+		return 'Fonte fora da janela de 72 horas (publicada em ' . wp_date( 'd/m/Y H:i', $timestamp ) . '). Confira se o texto deve ser tratado como histórico ou atualizado antes de aprovar.';
 	}
 	return '';
 }

@@ -192,10 +192,6 @@ function tpop_generate_ai_article( $pauta_id ) {
 	if ( 'tpop_pauta' !== get_post_type( $pauta_id ) ) {
 		return new WP_Error( 'tpop_invalid', 'Pauta inválida.' );
 	}
-	$age_error = tpop_pauta_news_age_error( $pauta_id );
-	if ( $age_error ) {
-		return new WP_Error( 'tpop_news_outdated', $age_error . ' Atualize a pauta com uma fonte recente ou trate-a como conteúdo histórico.' );
-	}
 	if ( get_post_meta( $pauta_id, '_tpop_post_id', true ) ) {
 		return new WP_Error( 'tpop_exists', 'Esta pauta já possui um artigo vinculado.' );
 	}
@@ -205,13 +201,8 @@ function tpop_generate_ai_article( $pauta_id ) {
 	}
 	// 1) Dossiê com dados reais.
 	$dossier = tpop_build_dossier( $pauta_id );
-	if ( (int) $dossier['chars'] < 700 ) {
-		return new WP_Error(
-			'tpop_insufficient_evidence',
-			'O material importado ainda é curto para escrever uma notícia completa sem inventar detalhes. Confira a fonte original e acrescente fatos confirmados no campo “Fatos confirmados pela redação” antes de gerar o rascunho.'
-		);
-	}
 	$source_warning = tpop_pauta_source_warning( $pauta_id );
+	$age_warning    = tpop_pauta_news_age_error( $pauta_id );
 
 	$modelo   = get_post_meta( $pauta_id, '_tpop_modelo', true );
 	$club     = trim( (string) get_post_meta( $pauta_id, '_tpop_club', true ) );
@@ -229,15 +220,19 @@ function tpop_generate_ai_article( $pauta_id ) {
 	$prompt .= "4. Rumor é rumor: deixe claro quando uma notícia não foi confirmada. Disponibilidade em streaming deve ser atribuída e tratada como sujeita a mudança.\n";
 	$prompt .= "5. Não copie frases do dossiê; reescreva com suas palavras.\n";
 	$prompt .= "6. Em críticas, separe opinião editorial de fatos verificáveis e não invente detalhes da obra. Evite spoilers importantes sem aviso claro.\n";
-	$prompt .= "7. Escreva uma matéria original e completa, com abertura que apresente a novidade, desenvolvimento organizado por subtítulos e um fechamento útil. Não transforme o mesmo fato em parágrafos repetidos nem acrescente contexto que não conste no dossiê.\n";
+	$prompt .= "7. O tamanho do rascunho deve ser proporcional às evidências. Com poucas informações, escreva um texto curto que apresente apenas o que foi confirmado e registre as lacunas em unverified. Não repita o mesmo fato para alongar nem acrescente contexto que não conste no dossiê.\n";
 	$prompt .= "8. Liste em \"unverified\" tudo que você incluiu e que a pessoa revisora deve conferir, e o que faltou saber.\n";
 	$depth = 'standard' === tpop_setting( 'ai_article_depth' ) ? 'standard' : 'detailed';
-	$minimum_words = (int) $dossier['chars'] >= 1500 ? ( 'detailed' === $depth ? 300 : 250 ) : 180;
+	$minimum_words = (int) $dossier['chars'] >= 1500 ? ( 'detailed' === $depth ? 300 : 250 ) : 0;
 	if ( 'detailed' === $depth ) {
-		$prompt .= "9. Com pelo menos 1.500 caracteres de evidências, escreva aproximadamente 500–800 palavras; com menos evidências, seja proporcional, com pelo menos " . $minimum_words . " palavras, sem repetir informações. Em críticas, desenvolva a avaliação sem revelar grandes spoilers.\n";
+		$prompt .= $minimum_words
+			? "9. Com pelo menos 1.500 caracteres de evidências, escreva aproximadamente 500–800 palavras; se os fatos não sustentarem essa extensão, seja mais breve e sinalize as lacunas em unverified. Em críticas, desenvolva a avaliação sem revelar grandes spoilers.\n"
+			: "9. Como há poucas evidências, escreva um rascunho conciso e proporcional aos fatos disponíveis; não tente atingir uma quantidade mínima de palavras. Em críticas, não invente detalhes nem revele grandes spoilers.\n";
 		$max_tokens = 4200;
 	} else {
-		$prompt .= "9. Com pelo menos 1.500 caracteres de evidências, escreva aproximadamente 300–500 palavras; com menos evidências, seja proporcional, com pelo menos " . $minimum_words . " palavras, sem repetir informações. Em críticas, desenvolva uma avaliação original sem inventar detalhes e sem revelar grandes spoilers.\n";
+		$prompt .= $minimum_words
+			? "9. Com pelo menos 1.500 caracteres de evidências, escreva aproximadamente 300–500 palavras; se os fatos não sustentarem essa extensão, seja mais breve e sinalize as lacunas em unverified. Em críticas, desenvolva uma avaliação original sem inventar detalhes e sem revelar grandes spoilers.\n"
+			: "9. Como há poucas evidências, escreva um rascunho conciso e proporcional aos fatos disponíveis; não tente atingir uma quantidade mínima de palavras. Em críticas, não invente detalhes nem revele grandes spoilers.\n";
 		$max_tokens = 2800;
 	}
 	if ( '' !== $style ) {
@@ -255,17 +250,11 @@ function tpop_generate_ai_article( $pauta_id ) {
 	if ( is_wp_error( $json ) ) {
 		return $json;
 	}
-	if ( tpop_ai_word_count( $json['content'] ) < $minimum_words ) {
+	if ( $minimum_words > 0 && tpop_ai_word_count( $json['content'] ) < $minimum_words ) {
 		$retry_prompt = $prompt . "\nA versão anterior ficou incompleta. Reescreva a matéria inteira com pelo menos " . $minimum_words . ' palavras no campo content, mantendo todas as regras factuais e sem repetir informações. Se o dossiê não sustentar esse tamanho, não invente: responda normalmente e registre a limitação em unverified.';
 		$retry_json   = tpop_ai_request_json( $system, $retry_prompt, $max_tokens );
 		if ( is_wp_error( $retry_json ) ) {
 			return $retry_json;
-		}
-		if ( tpop_ai_word_count( $retry_json['content'] ) < $minimum_words ) {
-			return new WP_Error(
-				'tpop_short_draft',
-				'A IA não conseguiu produzir uma matéria completa com os fatos disponíveis. Acrescente mais informações verificadas pela redação e tente novamente.'
-			);
 		}
 		$json = $retry_json;
 	}
@@ -284,8 +273,14 @@ function tpop_generate_ai_article( $pauta_id ) {
 	if ( $source_warning ) {
 		$flags[] = $source_warning;
 	}
-	if ( $dossier['chars'] < 250 ) {
-		$flags[] = 'Poucos dados extraídos (' . (int) $dossier['chars'] . ' caracteres); confira a matéria original e complete o texto.';
+	if ( $age_warning ) {
+		$flags[] = $age_warning;
+	}
+	if ( (int) $dossier['chars'] < 700 ) {
+		$flags[] = 'Poucos dados importados (' . (int) $dossier['chars'] . ' caracteres); confira a fonte original e complete ou edite o rascunho antes de aprovar.';
+	}
+	if ( $minimum_words > 0 && tpop_ai_word_count( $json['content'] ) < $minimum_words ) {
+		$flags[] = 'Rascunho abaixo da extensão recomendada para as evidências disponíveis; revise e edite antes de aprovar.';
 	}
 	$quality = tpop_quality_meter( $pauta_id, $dossier, $audit, $conf );
 

@@ -48,7 +48,7 @@ function tpop_pauta_box( $post ) {
 			<br><span style="color:#8a5a00"><strong>Alerta de qualidade:</strong> <?php echo esc_html( $warning ); ?></span>
 		<?php endif; ?>
 		<?php if ( $age_error ) : ?>
-			<br><span style="color:#b42318"><strong>Fora da janela de notícias atuais:</strong> <?php echo esc_html( $age_error ); ?> Pautas RSS sem data ou com mais de 72 horas não podem gerar rascunho como notícia atual.</span>
+			<br><span style="color:#8a5a00"><strong>Alerta de data:</strong> <?php echo esc_html( $age_error ); ?> A geração é permitida; confira se o conteúdo deve ser tratado como atual ou histórico antes de aprovar.</span>
 		<?php endif; ?>
 	</p>
 
@@ -68,7 +68,7 @@ function tpop_pauta_box( $post ) {
 			<p class="description">Uma por linha. Estes links serão copiados para o rascunho e aparecerão como “Fontes consultadas”.</p></td></tr>
 		<tr><th><label for="tpop_fatos_redacao">Fatos confirmados pela redação</label></th>
 			<td><textarea id="tpop_fatos_redacao" name="tpop_fatos_redacao" rows="5" class="large-text" maxlength="5000" placeholder="Registre fatos verificados, com a fonte ou link ao lado de cada um."><?php echo esc_textarea( $fatos ); ?></textarea>
-			<p class="description">Será incluído no dossiê da IA como anotação editorial. Registre somente fatos verificados e mantenha a referência no campo de links. Para evitar que a IA preencha lacunas, a geração exige pelo menos 700 caracteres de evidências; se o RSS for curto, consulte a fonte e acrescente fatos confirmados. O texto gerado deve ser original, não uma cópia da matéria consultada.</p></td></tr>
+			<p class="description">Opcional. Será incluído no dossiê da IA como anotação editorial. Registre somente fatos verificados e mantenha a referência no campo de links. Se o RSS trouxer poucos dados, a IA fará um rascunho curto e exibirá um alerta na revisão humana; você poderá completar e editar antes de aprovar. O texto gerado deve ser original, não uma cópia da matéria consultada.</p></td></tr>
 		<tr><th>Fonte confiável</th>
 			<td><label><input type="checkbox" name="tpop_fonte_confirmada" value="1" <?php checked( tpop_pauta_meta( $id, '_tpop_fonte_confirmada', '0' ), '1' ); ?>> Confirmei manualmente que há fonte confiável para esta pauta</label></td></tr>
 		<tr><th><label for="tpop_verificado_em">Última verificação</label></th>
@@ -102,10 +102,10 @@ function tpop_pauta_box( $post ) {
 
 	<?php if ( $post_id ) : ?>
 		<p><a class="button" href="<?php echo esc_url( get_edit_post_link( $post_id ) ); ?>">Abrir texto gerado</a></p>
-	<?php elseif ( 'auto-draft' !== $post->post_status && ! $age_error ) : ?>
+	<?php elseif ( 'auto-draft' !== $post->post_status ) : ?>
 		<p>
 			<a class="button button-primary" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=tpop_gerar_rascunho&pauta_id=' . $id ), 'tpop_gerar_' . $id ) ); ?>">Escrever com IA</a>
-			<span class="description">Gera um rascunho com o que foi extraído do RSS e envia para a <a href="<?php echo esc_url( admin_url( 'admin.php?page=tpop-revisao' ) ); ?>">fila de revisão</a>. A qualidade da fonte e a quantidade de dados aparecem como alertas, sem bloquear o rascunho. Confira tudo antes de publicar.</span>
+			<span class="description">Gera um rascunho com o material disponível e envia para a <a href="<?php echo esc_url( admin_url( 'admin.php?page=tpop-revisao' ) ); ?>">fila de revisão</a>. Poucos dados e datas ausentes ou antigas aparecem como alertas, não bloqueios; você poderá revisar e editar antes de aprovar.</span>
 		</p>
 	<?php endif; ?>
 	<?php

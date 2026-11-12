@@ -275,8 +275,12 @@ a.tpop-step:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(23,19
 
 /* Fila de revisão */
 .tpop-review { display:grid; gap:16px; }
+.tpop-bulkbar { display:flex; flex-wrap:wrap; align-items:center; gap:12px 18px; margin:0 0 16px; padding:14px 16px; background:#fff; border:1px solid var(--b-linha); border-radius:14px; }
+.tpop-bulkbar label { display:flex; align-items:center; gap:7px; font-size:13px; }
+.tpop-bulkbar .button { margin-left:auto; }
 .tpop-rv { background:#fff; border:1px solid var(--b-linha); border-radius:16px; overflow:hidden; }
 .tpop-rv__head { padding:18px 20px 12px; }
+.tpop-rv__select { display:flex; align-items:center; gap:7px; margin-bottom:8px; font-size:13px; font-weight:600; }
 .tpop-rv__head h2 { margin:6px 0 6px; font-size:19px; line-height:1.25; padding:0; font-weight:800; }
 .tpop-rv__meta { color:var(--b-cinza); font-size:12.5px; display:flex; gap:6px 14px; flex-wrap:wrap; }
 .tpop-quality { margin-top:12px; max-width:520px; padding:10px 12px; border-radius:11px; background:#f7f4fb; }
@@ -356,6 +360,22 @@ add_action(
 	var dialog = overlay.querySelector('.tpop-progress-dialog');
 	var started = false;
 	var pendingForm = null;
+	var bulkSelectAll = document.getElementById('tpop-bulk-select-all');
+	if (bulkSelectAll) {
+		var bulkItems = Array.prototype.slice.call(document.querySelectorAll('.tpop-bulk-item'));
+		var syncBulkSelectAll = function () {
+			var selected = bulkItems.filter(function (checkbox) { return checkbox.checked; }).length;
+			bulkSelectAll.checked = bulkItems.length > 0 && selected === bulkItems.length;
+			bulkSelectAll.indeterminate = selected > 0 && selected < bulkItems.length;
+		};
+		bulkSelectAll.addEventListener('change', function () {
+			bulkItems.forEach(function (checkbox) { checkbox.checked = bulkSelectAll.checked; });
+			syncBulkSelectAll();
+		});
+		bulkItems.forEach(function (checkbox) {
+			checkbox.addEventListener('change', syncBulkSelectAll);
+		});
+	}
 
 	function startProgress(heading, detail) {
 		if (started) {
@@ -380,6 +400,12 @@ add_action(
 		}
 		if (action === 'tpop_gerar_rascunho') {
 			return ['Gerando rascunho com IA', 'Preparando os dados da pauta, aguardando a IA e conferindo o texto.'];
+		}
+		if (action === 'tpop_bulk_publish') {
+			var count = document.querySelectorAll('.tpop-bulk-item:checked').length;
+			return count > 0
+				? ['Publicando rascunhos selecionados', 'Validando fontes, confirmação humana e permissões para ' + count + ' item(ns).']
+				: null;
 		}
 		if (action === 'tpop_test_openai') {
 			return ['Testando conexão com a OpenAI', 'Aguardando a resposta do serviço.'];

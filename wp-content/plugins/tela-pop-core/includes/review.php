@@ -44,6 +44,33 @@ add_action(
 	7
 );
 
+function tpop_review_publish_issues( $post_id, $publishing = false ) {
+	$issues = array();
+	if ( ! tpop_parse_sources( get_post_meta( $post_id, '_tpop_fontes_texto', true ) ) ) {
+		$issues[] = 'registre ao menos uma fonte';
+	}
+	if ( false !== stripos( (string) get_post_field( 'post_content', $post_id ), '[PREENCHER' ) ) {
+		$issues[] = 'remova os trechos “[PREENCHER…]”';
+	}
+	if ( $publishing && ! current_user_can( 'publish_post', $post_id ) ) {
+		$issues[] = 'seu perfil não pode publicar';
+	}
+	return $issues;
+}
+
+function tpop_review_mark_human_reviewed( $post_id, $user ) {
+	update_post_meta( $post_id, '_tpop_revisado', '1' );
+	update_post_meta( $post_id, '_tpop_revisado_por', $user->display_name );
+	update_post_meta( $post_id, '_tpop_revisado_em', current_time( 'mysql' ) );
+	update_post_meta( $post_id, '_tpop_verificado_em', current_time( 'Y-m-d' ) );
+	$pauta = (int) get_post_meta( $post_id, '_tpop_pauta_id', true );
+	if ( $pauta ) {
+		update_post_meta( $pauta, '_tpop_revisor', $user->ID );
+		update_post_meta( $pauta, '_tpop_status', 'aprovada' );
+		tpop_log( $pauta, 'Revisão humana concluída por ' . $user->display_name . '.' );
+	}
+}
+
 /* ------------------------------------------------------------------
  * Decisão da pessoa revisora
  * ---------------------------------------------------------------- */
@@ -73,33 +100,16 @@ add_action(
 			tpop_activity( 'revisao', $user->display_name . ' rejeitou “' . $title . '”.' );
 			tpop_flash( 'Texto rejeitado e enviado para a lixeira.', 'success' );
 		} elseif ( 'approve' === $do || 'publish' === $do ) {
-			$issues = array();
-			if ( ! tpop_parse_sources( get_post_meta( $post_id, '_tpop_fontes_texto', true ) ) ) {
-				$issues[] = 'registre ao menos uma fonte';
-			}
-			if ( false !== stripos( (string) get_post_field( 'post_content', $post_id ), '[PREENCHER' ) ) {
-				$issues[] = 'remova os trechos “[PREENCHER…]”';
-			}
+			$issues = tpop_review_publish_issues( $post_id, 'publish' === $do );
 			if ( empty( $_POST['confirm'] ) ) {
 				$issues[] = 'marque a caixa confirmando que conferiu os pontos a checar';
-			}
-			if ( 'publish' === $do && ! current_user_can( 'publish_post', $post_id ) ) {
-				$issues[] = 'seu perfil não pode publicar';
 			}
 			if ( $issues ) {
 				tpop_flash( '<strong>Não foi possível concluir:</strong> ' . esc_html( implode( '; ', $issues ) ) . '.', 'error' );
 				wp_safe_redirect( $back );
 				exit;
 			}
-			update_post_meta( $post_id, '_tpop_revisado', '1' );
-			update_post_meta( $post_id, '_tpop_revisado_por', $user->display_name );
-			update_post_meta( $post_id, '_tpop_revisado_em', current_time( 'mysql' ) );
-			update_post_meta( $post_id, '_tpop_verificado_em', current_time( 'Y-m-d' ) );
-			if ( $pauta ) {
-				update_post_meta( $pauta, '_tpop_revisor', $user->ID );
-				update_post_meta( $pauta, '_tpop_status', 'aprovada' );
-				tpop_log( $pauta, 'Revisão humana concluída por ' . $user->display_name . '.' );
-			}
+			tpop_review_mark_human_reviewed( $post_id, $user );
 			if ( 'publish' === $do ) {
 				wp_update_post( array( 'ID' => $post_id, 'post_status' => 'publish' ) );
 				tpop_flash( 'Publicado: ' . esc_html( $title ), 'success' );
@@ -108,6 +118,83 @@ add_action(
 			}
 			tpop_activity( 'revisao', $user->display_name . ' aprovou “' . $title . '”.' . ( 'publish' === $do ? ' Publicado.' : '' ) );
 		}
+		wp_safe_redirect( $back );
+		exit;
+	}
+);
+
+add_action(
+	'admin_post_tpop_bulk_publish',
+	function () {
+		check_admin_referer( 'tpop_bulk_publish' );
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			wp_die( 'Sem permissão.' );
+		}
+
+		$back = admin_url( 'admin.php?page=tpop-revisao' );
+		$raw_ids = isset( $_POST['post_ids'] ) ? (array) wp_unslash( $_POST['post_ids'] ) : array();
+		$post_ids = array_values( array_unique( array_filter( array_map( 'absint', $raw_ids ) ) ) );
+		if ( count( $post_ids ) > 30 ) {
+			tpop_flash( 'O limite é de 30 rascunhos por lote. Selecione apenas os itens exibidos na fila.', 'error' );
+			wp_safe_redirect( $back );
+			exit;
+		}
+		if ( ! $post_ids ) {
+			tpop_flash( 'Selecione ao menos um rascunho para publicar.', 'error' );
+			wp_safe_redirect( $back );
+			exit;
+		}
+		if ( empty( $_POST['confirm_all'] ) ) {
+			tpop_flash( 'Confirme que revisou cada rascunho selecionado antes de publicar o lote.', 'error' );
+			wp_safe_redirect( $back );
+			exit;
+		}
+
+		$user      = wp_get_current_user();
+		$published = 0;
+		$errors    = array();
+		foreach ( $post_ids as $post_id ) {
+			$post = get_post( $post_id );
+			if ( ! $post || 'post' !== $post->post_type || ! in_array( $post->post_status, array( 'pending', 'draft' ), true ) || ! in_array( get_post_meta( $post_id, '_tpop_origem', true ), array( 'pauta_ia', 'api' ), true ) || '1' === get_post_meta( $post_id, '_tpop_revisado', true ) ) {
+				$errors[] = 'Artigo #' . $post_id . ': não está mais aguardando revisão.';
+				continue;
+			}
+			if ( ! current_user_can( 'edit_post', $post_id ) ) {
+				$errors[] = get_the_title( $post_id ) . ': sem permissão para editar.';
+				continue;
+			}
+			$issues = tpop_review_publish_issues( $post_id, true );
+			if ( $issues ) {
+				$errors[] = get_the_title( $post_id ) . ': ' . implode( '; ', $issues ) . '.';
+				continue;
+			}
+
+			$previous_reviewed = get_post_meta( $post_id, '_tpop_revisado', true );
+			update_post_meta( $post_id, '_tpop_revisado', '1' );
+			$result = wp_update_post( array( 'ID' => $post_id, 'post_status' => 'publish' ), true );
+			if ( is_wp_error( $result ) || ! $result ) {
+				if ( '' === $previous_reviewed ) {
+					delete_post_meta( $post_id, '_tpop_revisado' );
+				} else {
+					update_post_meta( $post_id, '_tpop_revisado', $previous_reviewed );
+				}
+				$errors[] = get_the_title( $post_id ) . ': ' . ( is_wp_error( $result ) ? $result->get_error_message() : 'não foi possível publicar.' );
+				continue;
+			}
+
+			tpop_review_mark_human_reviewed( $post_id, $user );
+			tpop_activity( 'revisao', $user->display_name . ' publicou “' . get_the_title( $post_id ) . '” após revisão em lote.' );
+			++$published;
+		}
+
+		$message = sprintf( 'Lote concluído: %d publicado(s), %d não publicado(s).', $published, count( $errors ) );
+		if ( $errors ) {
+			$message .= ' ' . esc_html( implode( ' | ', array_slice( $errors, 0, 5 ) ) );
+			if ( count( $errors ) > 5 ) {
+				$message .= ' Mais ' . ( count( $errors ) - 5 ) . ' item(ns) precisam de atenção.';
+			}
+		}
+		tpop_flash( $message, $errors ? 'warning' : 'success' );
 		wp_safe_redirect( $back );
 		exit;
 	}
@@ -203,6 +290,18 @@ function tpop_review_page() {
 		return;
 	}
 
+	if ( current_user_can( 'publish_posts' ) ) :
+		?>
+		<form id="tpop-bulk-publish" class="tpop-bulkbar" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+			<?php wp_nonce_field( 'tpop_bulk_publish' ); ?>
+			<input type="hidden" name="action" value="tpop_bulk_publish">
+			<label><input type="checkbox" id="tpop-bulk-select-all"> Selecionar todos os <?php echo esc_html( (int) $q->post_count ); ?> rascunhos exibidos (máx. 30)</label>
+			<label><input type="checkbox" name="confirm_all" value="1" required> Confirmo que revisei cada rascunho selecionado</label>
+			<button class="button button-primary" type="submit">Publicar selecionados</button>
+		</form>
+		<?php
+	endif;
+
 	echo '<div class="tpop-review">';
 	while ( $q->have_posts() ) {
 		$q->the_post();
@@ -218,6 +317,9 @@ function tpop_review_page() {
 		?>
 		<article class="tpop-rv">
 			<div class="tpop-rv__head">
+				<?php if ( current_user_can( 'publish_posts' ) ) : ?>
+					<label class="tpop-rv__select"><input type="checkbox" class="tpop-bulk-item" name="post_ids[]" value="<?php echo esc_attr( $id ); ?>" form="tpop-bulk-publish"> Selecionar para publicação em lote</label>
+				<?php endif; ?>
 				<?php echo tpop_pill( 'pauta_ia' === $origin ? 'Escrito pela IA' : 'Enviado por automação', 'dark' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 				<?php echo isset( $report['confidence'] ) ? ' ' . tpop_confidence_pill( $report['confidence'] ) : ''; // phpcs:ignore WordPress.Security.EscapeOutput ?>
 				<h2><?php the_title(); ?></h2>
